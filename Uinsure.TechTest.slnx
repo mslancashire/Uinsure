@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/App/">
+    <Project Path="src/Uinsure.Policy.API/Uinsure.Policy.API.csproj" />
+  </Folder>
+  <Folder Name="/Core/" />
+  <Folder Name="/SolutionItems/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Tests/" />
+</Solution>
