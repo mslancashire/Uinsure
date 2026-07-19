@@ -1,6 +1,10 @@
-@Uinsure.Policy.API_HostAddress = http://localhost:5267
+@Uinsure.Policy.API_HostAddress = http://localhost:5267/api/v1
 
-GET {{Uinsure.Policy.API_HostAddress}}/weatherforecast/
+### 201 => Make A Policy Sale
+# @name createPolicy
+POST {{Uinsure.Policy.API_HostAddress}}/policy
 Accept: application/json
 
-###
+### 200 => Get Details of a Policy
+GET {{createPolicy.response.headers.Location}}
+Accept: application/json
