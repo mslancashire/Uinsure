@@ -1,5 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Uinsure.Core.Models;
+using Uinsure.Core.Repositories;
 
 namespace Uinsure.Policy.API.Controllers;
 
@@ -8,6 +10,13 @@ namespace Uinsure.Policy.API.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class PolicyController : ControllerBase
 {
+    private readonly IPolicyRepository _repository;
+
+    public PolicyController(IPolicyRepository repository)
+    {
+        _repository = repository;
+    }
+
     /// <summary>
     /// Makes a household insurance policy sale.
     /// </summary>
@@ -23,7 +32,16 @@ public class PolicyController : ControllerBase
     [ProducesResponseType(500)]
     public IActionResult MakePolicySale()
     {
-        return CreatedAtAction(nameof(GetPolicyById), new { Version = $"{1}", PolicyId = Guid.NewGuid() }, null);
+        var policy = HouseHoldPolicy.CreateNewSale();
+
+        var result = _repository.CreatePolicy(policy);
+
+        var response = result.Match<IActionResult>(
+            newPolicy => CreatedAtAction(nameof(GetPolicyById), new { Version = $"{1}", PolicyReference = newPolicy.Reference }, null),
+            failure => BadRequest($"Policy already created.")
+        );
+
+        return response;
     }
 
     /// <summary>
@@ -35,14 +53,20 @@ public class PolicyController : ControllerBase
     /// <response code="403">If not authorised, ensure all headers are provided.</response>
     /// <response code="500">Internal server error.</response>
     [HttpGet]
-    [Route("{policyId:guid}")]
+    [Route("{policyReference:guid}")]
     [Produces(typeof(object))]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     [ProducesResponseType(500)]
-    public IActionResult GetPolicyById([FromRoute] Guid policyId)
+    public IActionResult GetPolicyById([FromRoute] Guid policyReference)
     {
-        return Ok(new { PolicyId = policyId });
+        var result = _repository.Get(policyReference);
+        var response = result.Match<IActionResult>(
+           Ok,
+           failure => NotFound($"Policy with reference {policyReference} not found.")
+        );
+
+        return response;
     }
 }

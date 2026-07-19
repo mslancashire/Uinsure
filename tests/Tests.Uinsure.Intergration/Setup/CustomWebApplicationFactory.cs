@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Tests.Uinsure.Integration.Services;
+using Uinsure.Core.Repositories;
 
 namespace Tests.Uinsure.Integration.Setup;
 
@@ -22,6 +26,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureTestServices(services =>
         {
+            services.RemoveAll<IPolicyRepository>();
+            services.AddSingleton<IPolicyRepository, TestPolicyRepository>();
         });
     }
 }

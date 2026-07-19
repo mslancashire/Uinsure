@@ -1,14 +1,16 @@
 using Asp.Versioning;
+using Uinsure.Core.Repositories;
+using Uinsure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// services
+builder.Services.AddScoped<IPolicyRepository, StaticPolicyRepository>();
+
+// api documentation
 builder.Services.AddOpenApi();
-
-
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);

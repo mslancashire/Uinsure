@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/Core/">
     <Project Path="src/Uinsure.Core/Uinsure.Core.csproj" Id="824e7a00-5b2c-4663-946e-9448a68e12da" />
+    <Project Path="src/Uinsure.Data/Uinsure.Data.csproj" Id="fdb06f05-fb51-4b92-898d-b491bfbc0dff" />
   </Folder>
   <Folder Name="/SolutionItems/">
     <File Path="README.md" />
