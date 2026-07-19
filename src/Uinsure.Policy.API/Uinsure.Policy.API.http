@@ -4,6 +4,12 @@
 # @name createPolicy
 POST {{Uinsure.Policy.API_HostAddress}}/policy
 Accept: application/json
+Content-Type: application/json
+
+{
+  "startDate": "{{$datetime 'yyyy-MM-dd' 5 d}}"
+}
+
 
 ### 200 => Get Details of a Policy
 GET {{createPolicy.response.headers.Location}}

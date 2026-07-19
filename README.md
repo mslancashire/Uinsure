@@ -34,10 +34,10 @@ TBC
 
 1. [x] Scaffold the project.
 1. [x] Update the README.md with the functional requirements, constraints, assumptions and tasks.
-1. [ ] Build out the Unit test project.
-1. [ ] Build out the Integration test project.
-1. [ ] POST for selling a policy.
-1. [ ] GET for retrieving a policy.
+1. [x] Build out the Unit test project.
+1. [x] Build out the Integration test project.
+1. [x] POST for selling a policy.
+1. [x] GET for retrieving a policy.
 1. [ ] PUT for cancelling a policy, using PUT over DELETE, POST, PATCH as the policy will remain but will be changed.
 1. [ ] POST for renewing a policy, question here, would we create a new linked policy or just change the dates.
 1. [ ] GET for calculating the cost to cancel a policy before the policy has actually been cancelled.
@@ -52,3 +52,21 @@ TBC
 
 - For policy renewal, would we create a new linked policy or just change the dates on the existing policy?
 - 
+
+
+## Package Usage
+
+Some of the below packages can be replaced with custom code to avoid package proliferation.
+
+- `Swashbuckle` for Swagger API UI Explorer.
+- `OneOf` for simple result type outputs to avoid Exception Flow application logic. Replacement custom result types.
+- `FluentValidation` for validation.
+- `SharpGrip.FluentValidation` for adding Auto validation with Action Filters. Can be done using custom logic.
+- `xUnit` for unit testing framework, could also be NUnit.
+- `AwesomeAssertions` for simple testing, not using FluentAssertions due to being paid for. Replacement would be to just use Assert.That(...).
+
+
+## Improvements
+
+- The Up To 60 days rule is hard-coded, this could come from configuration or be based on provider.
+- Automatically setting the Policy End Date for a year after the Start, this could be configurable.

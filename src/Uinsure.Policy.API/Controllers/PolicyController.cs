@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Uinsure.Core.Models;
+using Uinsure.Core.Models.PolicySale;
 using Uinsure.Core.Repositories;
 
 namespace Uinsure.Policy.API.Controllers;
@@ -30,9 +31,9 @@ public class PolicyController : ControllerBase
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     [ProducesResponseType(500)]
-    public IActionResult MakePolicySale()
+    public IActionResult MakePolicySale(PolicySaleRequest saleRequest)
     {
-        var policy = HouseHoldPolicy.CreateNewSale();
+        var policy = HouseHoldPolicy.CreateNewSale(saleRequest);
 
         var result = _repository.CreatePolicy(policy);
 

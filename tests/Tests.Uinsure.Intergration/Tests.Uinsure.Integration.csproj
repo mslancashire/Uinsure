@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\Uinsure.Policy.API\Uinsure.Policy.API.csproj" />
+	  <ProjectReference Include="..\Tests.Uinsure.Core\Tests.Uinsure.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -11,6 +11,7 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests/Tests.Uinsure.Basic/Tests.Uinsure.Basic.csproj" Id="e53b8e80-d768-44ce-90bf-8191946010c0" />
+    <Project Path="tests/Tests.Uinsure.Core/Tests.Uinsure.Core.csproj" Id="4b9f108d-d908-4daa-b656-7d288838e63c" />
     <Project Path="tests/Tests.Uinsure.Intergration/Tests.Uinsure.Integration.csproj" Id="f58b94ca-e1ea-41e2-9ca5-9678ed40b193" />
   </Folder>
 </Solution>
