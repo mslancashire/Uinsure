@@ -5,7 +5,7 @@ namespace Tests.Uinsure.Core.Fakes;
 public class FakeHouseholdPolicies
 {
     public static HouseHoldPolicy Existing
-        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = new DateOnly(2026, 05, 15) });
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = new DateOnly(2025, 06, 15) });
 
     public static HouseHoldPolicy Valid
     {

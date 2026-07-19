@@ -39,19 +39,19 @@ TBC
 1. [x] POST for selling a policy.
 1. [x] GET for retrieving a policy.
 1. [ ] PUT for cancelling a policy, using PUT over DELETE, POST, PATCH as the policy will remain but will be changed.
-1. [ ] POST for renewing a policy, question here, would we create a new linked policy or just change the dates.
+1. [ ] PUT for renewing a policy, question here, would we create a new linked policy or just change the dates.
 1. [ ] GET for calculating the cost to cancel a policy before the policy has actually been cancelled.
 
 ## Sub Tasks
 
-1. [ ] Add in fluent validation.
-1. [ ] Add in an object store.
+1. [x] Add in fluent validation.
+1. [x] Add in an object store.
 1. [ ] Add in Docker support.
 
 ## Questions
 
 - For policy renewal, would we create a new linked policy or just change the dates on the existing policy?
-- 
+- Upon creating a policy should a Auto Renewal flag be set, currently based on if a payment has been made?
 
 
 ## Package Usage
@@ -72,3 +72,4 @@ Some of the below packages can be replaced with custom code to avoid package pro
 - Automatically setting the Policy End Date for a year after the Start, this could be configurable.
 - How to handle DateOnly with TimeZone.
 - How to handle Price and Amount for currencies.
+- Use Query, Commands / Service instead of direct controller logic.

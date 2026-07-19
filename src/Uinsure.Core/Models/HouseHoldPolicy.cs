@@ -30,7 +30,7 @@ public class HouseHoldPolicy
     /// <summary>
     /// Start date of the policy.
     /// </summary>
-    public DateOnly StartDate { get; init; }
+    public DateOnly StartDate { get; set; }
 
     /// <summary>
     /// End date of the policy, which is one year after the start date.
@@ -60,12 +60,42 @@ public class HouseHoldPolicy
     /// <param name="paymentType"></param>
     /// <param name="amount"></param>
     public HouseHoldPolicy MakePayment(PaymentType paymentType, decimal amount)
+        => MakePayment(Payment.Basic(paymentType, amount));
+
+    private HouseHoldPolicy MakePayment(Payment payment)
     {
-        if (paymentType != PaymentType.None && amount > 0)
+        if (payment.Type != PaymentType.None && payment.Amount > 0)
         {
-            _payments.Add(Payment.Basic(paymentType, amount));
+            _payments.Add(payment);
         }
 
+        return this;
+    }
+
+    /// <summary>
+    /// Auto Renew is enabled if there are payments.
+    /// </summary>
+    public bool AutoRenew => Payments.Any();
+
+    public bool Expired(DateOnly now)
+        => EndDate < now;
+
+    public bool WithinRenewalPeriod(DateOnly now)
+        => EndDate.AddDays(-30) > now;
+
+    /// <summary>
+    /// Renews the policy, adding a payment if Auto Renew is enabled.
+    /// </summary>
+    /// <returns></returns>
+    public HouseHoldPolicy Renew()
+    {
+        StartDate = StartDate.AddYears(1);
+        
+        if (AutoRenew)
+        {
+            MakePayment(Payment.Basic(Payments.First()));
+        }
+        
         return this;
     }
 }
