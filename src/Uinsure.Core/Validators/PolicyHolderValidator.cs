@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
+using Uinsure.Core.Models;
 
-namespace Uinsure.Core.Models.PolicySale;
+namespace Uinsure.Core.Validators;
 
 internal class PolicyHolderValidator : AbstractValidator<PolicyHolder>
 {

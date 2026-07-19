@@ -1,7 +1,7 @@
 ﻿using FluentValidation.TestHelper;
 using Tests.Uinsure.Core;
 using Tests.Uinsure.Core.Fakes;
-using Uinsure.Core.Models.PolicySale;
+using Uinsure.Core.Validators;
 
 namespace Tests.Uinsure.Basic.Validation;
 
@@ -22,11 +22,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_valid()
     {
         // arrange
-        var validSalesRequest = _faker.Valid();
+        var salesRequest = _faker.Valid();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeTrue();
@@ -37,11 +37,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_valid_when_start_date_is_today()
     {
         // arrange
-        var validSalesRequest = _faker.ForToday();
+        var salesRequest = _faker.ForToday();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeTrue();
@@ -51,11 +51,11 @@ public class PolicySaleValidatorTests
     [Fact]
     public void SalesRequest_should_be_invalid_when_start_date_is_not_provided()
     {
-        var validSalesRequest = _faker.MissingStartDate();
+        var salesRequest = _faker.MissingStartDate();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -68,11 +68,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_start_date_is_in_past()
     {
         // arrange
-        var validSalesRequest = _faker.InPast();
+        var salesRequest = _faker.InPast();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -84,11 +84,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_start_date_is_over_60_days_into_future()
     {
         // arrange
-        var validSalesRequest = _faker.Over60Days();
+        var salesRequest = _faker.Over60Days();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -100,11 +100,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_start_date_exactly_60_days_into_future()
     {
         // arrange
-        var validSalesRequest = _faker.Exactly60Days();
+        var salesRequest = _faker.Exactly60Days();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -116,11 +116,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_policy_has_no_holders()
     {
         // arrange
-        var validSalesRequest = _faker.NoHolders();
+        var salesRequest = _faker.NoHolders();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -132,11 +132,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_policy_has_more_than_3_holders()
     {
         // arrange
-        var validSalesRequest = _faker.MoreThen3Holders();
+        var salesRequest = _faker.MoreThen3Holders();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -148,11 +148,11 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_policy_has_a_holder_younger_then_16()
     {
         // arrange
-        var validSalesRequest = _faker.YoungerThan16();
+        var salesRequest = _faker.YoungerThan16();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
@@ -164,15 +164,31 @@ public class PolicySaleValidatorTests
     public void SalesRequest_should_be_invalid_when_policy_has_a_holder_just_under_16()
     {
         // arrange
-        var validSalesRequest = _faker.JustUnder16();
+        var salesRequest = _faker.JustUnder16();
         var validator = CreateValidator();
 
         // act
-        var result = validator.TestValidate(validSalesRequest);
+        var result = validator.TestValidate(salesRequest);
 
         // assert
         result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor("PolicyHolders[0].DateOfBirth")
             .WithErrorMessage("Policy Holder must be over 16 years of age.");
+    }
+
+    [Fact]
+    public void SalesRequest_should_be_invalid_when_no_property_is_provided()
+    {
+        // arrange
+        var salesRequest = _faker.NoProperty();
+        var validator = CreateValidator();
+
+        // act
+        var result = validator.TestValidate(salesRequest);
+
+        // assert
+        result.IsValid.Should().BeFalse();
+        result.ShouldHaveValidationErrorFor(r => r.Property)
+            .WithErrorMessage("Policy must have property it will cover.");
     }
 }

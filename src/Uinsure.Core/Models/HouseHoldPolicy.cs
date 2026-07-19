@@ -1,6 +1,4 @@
-﻿using Uinsure.Core.Models.PolicySale;
-
-namespace Uinsure.Core.Models;
+﻿namespace Uinsure.Core.Models;
 
 public class HouseHoldPolicy
 {
@@ -11,6 +9,7 @@ public class HouseHoldPolicy
             Reference = Guid.NewGuid(),
             StartDate = saleRequest.StartDate,
             PolicyHolders = saleRequest.PolicyHolders,
+            Property = saleRequest.Property,
         };
     }
 
@@ -37,5 +36,10 @@ public class HouseHoldPolicy
     /// <summary>
     /// The policy holders.
     /// </summary>
-    public IEnumerable<PolicyHolder> PolicyHolders { get; init; }
+    public IEnumerable<PolicyHolder> PolicyHolders { get; init; } = [];
+
+    /// <summary>
+    /// The property the policy covers.
+    /// </summary>
+    public Property? Property { get; init; }
 }

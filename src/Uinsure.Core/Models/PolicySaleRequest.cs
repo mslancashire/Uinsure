@@ -1,4 +1,4 @@
-﻿namespace Uinsure.Core.Models.PolicySale;
+﻿namespace Uinsure.Core.Models;
 
 /// <summary>
 /// A request to make a house hold policy sale.
@@ -14,4 +14,9 @@ public class PolicySaleRequest
     /// Who are the holders of the policy.
     /// </summary>
     public IEnumerable<PolicyHolder> PolicyHolders { get; set; } = [];
+
+    /// <summary>
+    /// Which property should the policy cover.
+    /// </summary>
+    public Property? Property { get; set; }
 }

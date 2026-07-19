@@ -1,5 +1,4 @@
 ﻿using Uinsure.Core.Models;
-using Uinsure.Core.Models.PolicySale;
 
 namespace Tests.Uinsure.Core.Fakes;
 

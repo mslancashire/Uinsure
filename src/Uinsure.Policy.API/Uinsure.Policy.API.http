@@ -15,7 +15,12 @@ Content-Type: application/json
           "lastName": "Blogs",
           "dateOfBirth": "{{$datetime 'yyyy-MM-dd' -20 y}}"
       }
-  ]
+  ],
+  "property":
+  {
+      "addressLine1": "10 Test Street",
+      "postCode": "TE5 5ST"
+  }
 }
 
 

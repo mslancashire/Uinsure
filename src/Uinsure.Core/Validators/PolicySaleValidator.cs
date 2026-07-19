@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
+using Uinsure.Core.Models;
 
-namespace Uinsure.Core.Models.PolicySale;
+namespace Uinsure.Core.Validators;
 
 public class PolicySaleValidator : AbstractValidator<PolicySaleRequest>
 {
@@ -35,5 +36,9 @@ public class PolicySaleValidator : AbstractValidator<PolicySaleRequest>
 
         RuleForEach(r => r.PolicyHolders)
             .SetValidator(policy => new PolicyHolderValidator(timeProvider, policy));
+
+        RuleFor(r => r.Property)
+            .NotNull()
+            .WithMessage("Policy must have property it will cover.");
     }
 }

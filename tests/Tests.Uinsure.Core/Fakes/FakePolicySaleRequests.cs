@@ -1,4 +1,4 @@
-﻿using Uinsure.Core.Models.PolicySale;
+﻿using Uinsure.Core.Models;
 
 namespace Tests.Uinsure.Core.Fakes;
 
@@ -19,10 +19,20 @@ public class FakePolicySaleRequests
         => new();
 
     public PolicySaleRequest Valid()
-        => new() { StartDate = _validStartDate, PolicyHolders = [FakePolicyHolders.Over16(_validStartDate)] };
+        => new()
+        {
+            StartDate = _validStartDate,
+            PolicyHolders = [FakePolicyHolders.Over16(_validStartDate)],
+            Property = Property.Basic("10 Test Street", "TE5 5ST")
+        };
 
     public PolicySaleRequest ForToday()
-        => new() { StartDate = _now, PolicyHolders = [FakePolicyHolders.Over16(_now)] };
+        => new()
+        {
+            StartDate = _now,
+            PolicyHolders = [FakePolicyHolders.Over16(_now)],
+            Property = Property.Basic("10 Test Street", "TE5 5ST")
+        };
 
     public PolicySaleRequest InPast()
         => new() { StartDate = _now.AddDays(-1) };
@@ -55,5 +65,12 @@ public class FakePolicySaleRequests
         {
             StartDate = _validStartDate,
             PolicyHolders = [FakePolicyHolders.JustUnder16(_validStartDate), FakePolicyHolders.Over16(_validStartDate)]
+        };
+
+    public PolicySaleRequest NoProperty()
+        => new()
+        {
+            StartDate = _validStartDate,
+            PolicyHolders = [FakePolicyHolders.Over16(_validStartDate)],
         };
 }

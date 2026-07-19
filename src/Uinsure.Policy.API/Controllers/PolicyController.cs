@@ -1,7 +1,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Uinsure.Core.Models;
-using Uinsure.Core.Models.PolicySale;
 using Uinsure.Core.Repositories;
 
 namespace Uinsure.Policy.API.Controllers;
