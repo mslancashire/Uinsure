@@ -2,6 +2,7 @@ using Asp.Versioning;
 using FluentValidation;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
+using Uinsure.Core.Models.PolicySale;
 using Uinsure.Core.Repositories;
 using Uinsure.Data;
 
@@ -15,7 +16,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IPolicyRepository, StaticPolicyRepository>();
 
 // add validation
-builder.Services.AddValidatorsFromAssemblyContaining<Uinsure.Core.AssemblyReference>(includeInternalTypes: true);
+builder.Services.AddValidatorsFromAssemblyContaining<Uinsure.Core.AssemblyReference>();
 builder.Services.AddFluentValidationAutoValidation();
 
 // api documentation

@@ -27,7 +27,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<IPolicyRepository>();
+            services.RemoveAll<TimeProvider>();
+
             services.AddSingleton<IPolicyRepository, TestPolicyRepository>();
+            services.AddSingleton(Core.Settings.TimeProvider);
         });
     }
 }

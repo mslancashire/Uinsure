@@ -2,11 +2,11 @@
 
 namespace Uinsure.Core.Models.PolicySale;
 
-internal class PolicySaleValidator : AbstractValidator<PolicySaleRequest>
+public class PolicySaleValidator : AbstractValidator<PolicySaleRequest>
 {
     public PolicySaleValidator(TimeProvider timeProvider)
     {
-        var now = timeProvider.GetUtcNow();
+        var now = DateOnly.FromDateTime(timeProvider.GetUtcNow().Date);
         var allowPoliciesTill = now.AddDays(60);
 
         RuleFor(r => r.StartDate)
@@ -18,11 +18,22 @@ internal class PolicySaleValidator : AbstractValidator<PolicySaleRequest>
             .WithMessage("Policy start date must be provided.");
 
         RuleFor(r => r.StartDate)
-            .GreaterThanOrEqualTo(DateOnly.FromDateTime(now.Date))
+            .GreaterThanOrEqualTo(now)
             .WithMessage("Policy must either start today or into the future.");
 
         RuleFor(r => r.StartDate)
-            .LessThan(DateOnly.FromDateTime(allowPoliciesTill.Date))
+            .LessThan(allowPoliciesTill)
             .WithMessage("Policy can only be sold up to 60 days in advance.");
+
+        RuleFor(r => r.PolicyHolders)
+            .NotEmpty()
+            .WithMessage("Policy must have at least 1 Policy Holder.");
+
+        RuleFor(r => r.PolicyHolders)
+            .Must(items => items.Count() <= 3)
+            .WithMessage("Policy can only have up to 3 Policy Holders.");
+
+        RuleForEach(r => r.PolicyHolders)
+            .SetValidator(policy => new PolicyHolderValidator(timeProvider, policy));
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Tests.Uinsure.Core;
+using Tests.Uinsure.Core.Fakes;
 using Tests.Uinsure.Integration.Helpers;
 using Tests.Uinsure.Integration.Setup;
 using Uinsure.Core.Models;
@@ -7,8 +9,11 @@ namespace Tests.Uinsure.Integration;
 
 public class PolicySaleTests : BaseIntegrationTestFixture
 {
+    private readonly FakePolicySaleRequests _faker;
+
     public PolicySaleTests(CustomWebApplicationFactory application) : base(application)
     {
+        _faker = new FakePolicySaleRequests(Settings.TimeProvider);
     }
 
     [Fact]
@@ -17,10 +22,10 @@ public class PolicySaleTests : BaseIntegrationTestFixture
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
         var endpoint = "api/v1/policy";
-        var expectedPolicy = Fakes.HouseholdPolicies.Valid;
+        var policySaleRequest = _faker.Valid();
         
         // act
-        var createdResponse = await _client.PostAsync(endpoint, expectedPolicy.ToJsonContent(), cancellationToken);
+        var createdResponse = await _client.PostAsync(endpoint, policySaleRequest.ToJsonContent(), cancellationToken);
 
         // assert
         createdResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -32,12 +37,13 @@ public class PolicySaleTests : BaseIntegrationTestFixture
         // act
         var detailsResponse = await _client.GetAsync(createdResponse.Headers.Location, cancellationToken);
         detailsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
+        
         var createdPolicy = await detailsResponse.GetAs<HouseHoldPolicy>();
         createdPolicy.Should().NotBeNull();
         createdPolicy.Reference.Should().Be(policyId);
-        createdPolicy.StartDate.Should().Be(expectedPolicy.StartDate);
-        createdPolicy.EndDate.Should().Be(expectedPolicy.EndDate);
+        createdPolicy.StartDate.Should().Be(policySaleRequest.StartDate);
+        createdPolicy.EndDate.Should().Be(policySaleRequest.StartDate.AddYears(1));
+        createdPolicy.PolicyLengthInDays.Should().Be(365);
     }
 
     [Fact]
@@ -45,7 +51,7 @@ public class PolicySaleTests : BaseIntegrationTestFixture
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
-        var expectedPolicy = Fakes.HouseholdPolicies.Existing;
+        var expectedPolicy = Fakes.FakeHouseholdPolicies.Existing;
         var endpoint = $"api/v1/policy/{expectedPolicy.Reference}";
 
         // act
@@ -67,7 +73,7 @@ public class PolicySaleTests : BaseIntegrationTestFixture
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
         var endpoint = $"api/v1/policy";
-        var salesRequest = Fakes.PolicySaleRequests.MissingStartDate();
+        var salesRequest = _faker.MissingStartDate();
 
         // act
         var response = await _client.PostAsync(endpoint, salesRequest.ToJsonContent() ,cancellationToken);
@@ -75,6 +81,25 @@ public class PolicySaleTests : BaseIntegrationTestFixture
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var problemDetails = response.GetAs<ProblemDetails>();
+        var problemDetails = await response.GetAs<ProblemDetails>();
+        problemDetails.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task PolicySale_should_return_400_when_no_policy_holders_are_provided()
+    {
+        // arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+        var endpoint = $"api/v1/policy";
+        var salesRequest = _faker.MissingStartDate();
+
+        // act
+        var response = await _client.PostAsync(endpoint, salesRequest.ToJsonContent(), cancellationToken);
+
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.GetAs<ProblemDetails>();
+        problemDetails.Should().NotBeNull();
     }
 }

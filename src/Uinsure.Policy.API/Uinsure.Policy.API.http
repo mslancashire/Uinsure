@@ -7,7 +7,15 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "startDate": "{{$datetime 'yyyy-MM-dd' 5 d}}"
+  "startDate": "{{$datetime 'yyyy-MM-dd' 5 d}}",
+  "policyHolders":
+  [
+      {
+          "firstName": "Joe",
+          "lastName": "Blogs",
+          "dateOfBirth": "{{$datetime 'yyyy-MM-dd' -20 y}}"
+      }
+  ]
 }
 
 

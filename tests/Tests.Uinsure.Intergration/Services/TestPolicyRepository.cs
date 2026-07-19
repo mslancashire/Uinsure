@@ -11,7 +11,7 @@ internal class TestPolicyRepository : IPolicyRepository
 
     public TestPolicyRepository()
     {
-        PoliciesStore.Add(Fakes.HouseholdPolicies.Existing.Reference, Fakes.HouseholdPolicies.Existing);
+        PoliciesStore.Add(Fakes.FakeHouseholdPolicies.Existing.Reference, Fakes.FakeHouseholdPolicies.Existing);
     }
 
     public OneOf<HouseHoldPolicy, No> CreatePolicy(HouseHoldPolicy policy)

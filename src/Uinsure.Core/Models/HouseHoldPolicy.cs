@@ -9,7 +9,8 @@ public class HouseHoldPolicy
         return new HouseHoldPolicy
         {
             Reference = Guid.NewGuid(),
-            StartDate = saleRequest.StartDate
+            StartDate = saleRequest.StartDate,
+            PolicyHolders = saleRequest.PolicyHolders,
         };
     }
 
@@ -32,4 +33,9 @@ public class HouseHoldPolicy
     public DateOnly EndDate => StartDate.AddYears(1);
 
     public int PolicyLengthInDays => EndDate.DayNumber - StartDate.DayNumber;
+
+    /// <summary>
+    /// The policy holders.
+    /// </summary>
+    public IEnumerable<PolicyHolder> PolicyHolders { get; init; }
 }
