@@ -2,15 +2,21 @@
 
 public class HouseHoldPolicy
 {
+    private readonly List<Payment> _payments = [];
+    
     public static HouseHoldPolicy CreateNewSale(PolicySaleRequest saleRequest)
     {
-        return new HouseHoldPolicy
+        var policy = new HouseHoldPolicy
         {
             Reference = Guid.NewGuid(),
             StartDate = saleRequest.StartDate,
             PolicyHolders = saleRequest.PolicyHolders,
             Property = saleRequest.Property,
         };
+
+        policy.MakePayment(saleRequest.PaymentType, saleRequest.Price);
+
+        return policy;
     }
 
     /// <summary>
@@ -42,4 +48,24 @@ public class HouseHoldPolicy
     /// The property the policy covers.
     /// </summary>
     public Property? Property { get; init; }
+
+    /// <summary>
+    /// Payments made on the policy.
+    /// </summary>
+    public IEnumerable<Payment> Payments => _payments;
+
+    /// <summary>
+    /// Adds a payment to the policy.
+    /// </summary>
+    /// <param name="paymentType"></param>
+    /// <param name="amount"></param>
+    public HouseHoldPolicy MakePayment(PaymentType paymentType, decimal amount)
+    {
+        if (paymentType != PaymentType.None && amount > 0)
+        {
+            _payments.Add(Payment.Basic(paymentType, amount));
+        }
+
+        return this;
+    }
 }

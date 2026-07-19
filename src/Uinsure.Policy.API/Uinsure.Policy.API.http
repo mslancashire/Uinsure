@@ -1,6 +1,6 @@
 @Uinsure.Policy.API_HostAddress = http://localhost:5267/api/v1
 
-### 201 => Make A Policy Sale
+### 201 => Make A Policy Sale (no payment)
 # @name createPolicy
 POST {{Uinsure.Policy.API_HostAddress}}/policy
 Accept: application/json
@@ -23,7 +23,37 @@ Content-Type: application/json
   }
 }
 
-
 ### 200 => Get Details of a Policy
 GET {{createPolicy.response.headers.Location}}
+Accept: application/json
+
+
+
+### 201 => Make A Policy Sale (with payment)
+# @name createPolicyWithPayment
+POST {{Uinsure.Policy.API_HostAddress}}/policy
+Accept: application/json
+Content-Type: application/json
+
+{
+  "startDate": "{{$datetime 'yyyy-MM-dd' 5 d}}",
+  "policyHolders":
+  [
+      {
+          "firstName": "Joe",
+          "lastName": "Blogs",
+          "dateOfBirth": "{{$datetime 'yyyy-MM-dd' -20 y}}"
+      }
+  ],
+  "property":
+  {
+      "addressLine1": "10 Test Street",
+      "postCode": "TE5 5ST"
+  },
+  "paymentType": "Card",
+  "price": 150.99
+}
+
+### 200 => Get Details of a Policy
+GET {{createPolicyWithPayment.response.headers.Location}}
 Accept: application/json

@@ -2,13 +2,19 @@ using Asp.Versioning;
 using FluentValidation;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Uinsure.Core.Repositories;
 using Uinsure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var commonAssembly = Assembly.GetAssembly(typeof(Uinsure.Core.AssemblyReference)) ?? throw new ApplicationException("Common Assembly not found");
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // services
 builder.Services.AddSingleton(TimeProvider.System);

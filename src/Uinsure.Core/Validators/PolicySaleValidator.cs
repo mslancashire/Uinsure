@@ -40,5 +40,15 @@ public class PolicySaleValidator : AbstractValidator<PolicySaleRequest>
         RuleFor(r => r.Property)
             .NotNull()
             .WithMessage("Policy must have property it will cover.");
+
+        RuleFor(r => r.PaymentType)
+            .NotEmpty()
+            .When(r => r.Price > 0)
+            .WithMessage("A valid payment type must be provided if a policy price is set.");
+
+        RuleFor(r => r.Price)
+            .GreaterThan(0)
+            .When(r => r.PaymentType != PaymentType.None)
+            .WithMessage("The policy price must be greater than 0 if a payment type is provided.");
     }
 }

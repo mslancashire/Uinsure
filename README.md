@@ -8,8 +8,8 @@ TBC
 
 ## Functional Requirements
 
-- [ ] (Must) Sell a Policy.
-- [ ] (Must) Retrieve a Policy.
+- [x] (Must) Sell a Policy.
+- [x] (Must) Retrieve a Policy.
 - [ ] (Should) Cancel the Policy.
 - [ ] (Should) Renew a Policy.
 - [ ] (Could) Calculate the cost to cancel a policy before the policy has actually been cancelled.
@@ -70,3 +70,5 @@ Some of the below packages can be replaced with custom code to avoid package pro
 
 - The Up To 60 days rule is hard-coded, this could come from configuration or be based on provider.
 - Automatically setting the Policy End Date for a year after the Start, this could be configurable.
+- How to handle DateOnly with TimeZone.
+- How to handle Price and Amount for currencies.

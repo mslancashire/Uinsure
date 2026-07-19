@@ -26,6 +26,16 @@ public class FakePolicySaleRequests
             Property = Property.Basic("10 Test Street", "TE5 5ST")
         };
 
+    public PolicySaleRequest ValidWithPayment()
+        => new()
+        {
+            StartDate = _validStartDate,
+            PolicyHolders = [FakePolicyHolders.Over16(_validStartDate)],
+            Property = Property.Basic("10 Test Street", "TE5 5ST"),
+            PaymentType = PaymentType.DirectDebit,
+            Price = 259.99M
+        };
+
     public PolicySaleRequest ForToday()
         => new()
         {

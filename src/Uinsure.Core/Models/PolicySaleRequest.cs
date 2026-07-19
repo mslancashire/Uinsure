@@ -19,4 +19,14 @@ public class PolicySaleRequest
     /// Which property should the policy cover.
     /// </summary>
     public Property? Property { get; set; }
+
+    /// <summary>
+    /// How will the policy be paid for.
+    /// </summary>
+    public PaymentType PaymentType { get; set; } = PaymentType.None;
+
+    /// <summary>
+    /// How much is the policy for.
+    /// </summary>
+    public decimal Price { get; set; } = 0;
 }
