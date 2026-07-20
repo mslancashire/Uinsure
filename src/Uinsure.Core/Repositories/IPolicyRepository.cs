@@ -22,4 +22,11 @@ public interface IPolicyRepository
     /// <param name="policyReference"></param>
     /// <returns></returns>
     OneOf<HouseHoldPolicy, None> Get(Guid policyReference);
+
+    /// <summary>
+    /// Updates an existing policy. If the policy does not exist, it will return None.
+    /// </summary>
+    /// <param name="policy"></param>
+    /// <returns></returns>
+    OneOf<HouseHoldPolicy, None> Update(HouseHoldPolicy policy);
 }

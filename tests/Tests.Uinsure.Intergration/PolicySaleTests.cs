@@ -51,7 +51,7 @@ public class PolicySaleTests : BaseIntegrationTestFixture
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
-        var expectedPolicy = Fakes.FakeHouseholdPolicies.Existing;
+        var expectedPolicy = Fakes.FakeHouseholdPolicies.ExistingWithoutPayments;
         var endpoint = $"api/v1/policy/{expectedPolicy.Reference}";
 
         // act

@@ -31,7 +31,7 @@ public class PolicyController : ControllerBase
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [ProducesResponseType(201)]
-    [ProducesResponseType(400)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
     [ProducesResponseType(403)]
     [ProducesResponseType(500)]
     public IActionResult MakePolicySale(PolicySaleRequest saleRequest)
@@ -39,12 +39,10 @@ public class PolicyController : ControllerBase
         var policy = HouseHoldPolicy.CreateNewSale(saleRequest);
         var result = _repository.CreatePolicy(policy);
 
-        var response = result.Match<IActionResult>(
+        return result.Match<IActionResult>(
             newPolicy => CreatedAtAction(nameof(GetPolicyById), new { Version = $"{1}", PolicyReference = newPolicy.Reference }, null),
             failure => BadRequest($"Policy already created.")
         );
-
-        return response;
     }
 
     /// <summary>
@@ -57,20 +55,19 @@ public class PolicyController : ControllerBase
     /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route("{policyReference:guid}")]
-    [Produces(typeof(object))]
-    [ProducesResponseType(typeof(object), 200)]
-    [ProducesResponseType(400)]
+    [Produces(typeof(HouseHoldPolicy))]
+    [ProducesResponseType(typeof(HouseHoldPolicy), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
     [ProducesResponseType(403)]
     [ProducesResponseType(500)]
     public IActionResult GetPolicyById([FromRoute] Guid policyReference)
     {
         var result = _repository.Get(policyReference);
-        var response = result.Match<IActionResult>(
+        
+        return result.Match<IActionResult>(
            Ok,
            failure => NotFound($"Policy with reference {policyReference} not found.")
         );
-
-        return response;
     }
 
     /// <summary>
@@ -83,15 +80,15 @@ public class PolicyController : ControllerBase
     /// <response code="500">Internal server error.</response>
     [HttpPut]
     [Route("{policyReference:guid}/renew")]
-    [Produces(typeof(object))]
-    [ProducesResponseType(typeof(object), 200)]
-    [ProducesResponseType(400)]
+    [Produces(typeof(HouseHoldPolicy))]
+    [ProducesResponseType(typeof(HouseHoldPolicy), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
     [ProducesResponseType(403)]
     [ProducesResponseType(500)]
     public IActionResult RenewPolicy([FromRoute] Guid policyReference)
     {
         var result = _repository.Get(policyReference);
-        if (result.TryPickT0(out var policy, out _))
+        if (result.TryPickT0(out var policy, out _) == false)
         {
             return NotFound($"Policy with reference {policyReference} not found.");
         }
@@ -103,8 +100,12 @@ public class PolicyController : ControllerBase
         }
 
         var renewedPolicy = policy.Renew();
+        var updateResult = _repository.Update(renewedPolicy);
 
-        return Ok(renewedPolicy);
+        return updateResult.Match<IActionResult>(
+            Ok,
+            none => NotFound(none)
+            );
     }
 
     public static ProblemDetails ProblemDetails(ValidationResult validationResult, HttpContext context)

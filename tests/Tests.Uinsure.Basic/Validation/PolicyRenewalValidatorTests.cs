@@ -44,7 +44,7 @@ public class PolicyRenewalValidatorTests
 
         // assert
         result.IsValid.Should().BeFalse();
-        result.ShouldHaveValidationErrorFor(p => p)
+        result.ShouldHaveValidationErrorFor("EndDate")
             .WithErrorMessage("Policy can not be renewed after the policy end date.");
     }
 
@@ -60,7 +60,7 @@ public class PolicyRenewalValidatorTests
 
         // assert
         result.IsValid.Should().BeFalse();
-        result.ShouldHaveValidationErrorFor(p => p)
+        result.ShouldHaveValidationErrorFor("EndDate")
             .WithErrorMessage("Policy can only be renewed 30 days before end date.");
     }
 }

@@ -4,23 +4,25 @@ namespace Tests.Uinsure.Core.Fakes;
 
 public class FakeHouseholdPolicies
 {
-    public static HouseHoldPolicy Existing
-        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = new DateOnly(2025, 06, 15) });
+    public static IEnumerable<HouseHoldPolicy> ExistingPolicies =>
+        [ExistingWithoutPayments, ExistingWithPayments, Expired, OutsideRenewalPeriod];
 
-    public static HouseHoldPolicy Valid
-    {
-        get
+    public static readonly HouseHoldPolicy ExistingWithoutPayments
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = Settings.DateForRenewal });
+
+    public static readonly HouseHoldPolicy ExistingWithPayments
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest
         {
-            var saleRequest = new PolicySaleRequest()
-            {
-                StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(59).Date),
-                PolicyHolders =
-                [
-                    PolicyHolder.Basic("Joe", "Blogs", new DateOnly(2000, 1 ,1))
-                ]
-            };
+            StartDate = Settings.DateForRenewal,
+            PaymentType = PaymentType.Card,
+            Price = 159.59M
+        });
 
-            return HouseHoldPolicy.CreateNewSale(saleRequest);
-        }
-    }
+    public static readonly HouseHoldPolicy Expired
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = Settings.ReferenceDate.AddMonths(-13) });
+
+    public static readonly HouseHoldPolicy OutsideRenewalPeriod
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = Settings.ReferenceDate.AddMonths(-11) });
+
+    public static readonly HouseHoldPolicy MissingPolicy = new() { Reference = Guid.NewGuid() };
 }

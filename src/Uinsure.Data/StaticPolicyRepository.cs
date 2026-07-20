@@ -7,8 +7,8 @@ namespace Uinsure.Data;
 
 public class StaticPolicyRepository : IPolicyRepository
 {
-    private static readonly Dictionary<Guid, HouseHoldPolicy> _policies = [];
-    
+    private static readonly Dictionary<Guid, HouseHoldPolicy> _policies = [];    
+
     public OneOf<HouseHoldPolicy, No> CreatePolicy(HouseHoldPolicy policy)
     {
         if (_policies.TryAdd(policy.Reference, policy))
@@ -27,5 +27,17 @@ public class StaticPolicyRepository : IPolicyRepository
         }
 
         return new None();
+    }
+
+    public OneOf<HouseHoldPolicy, None> Update(HouseHoldPolicy policy)
+    {
+        if (_policies.ContainsKey(policy.Reference) == false)
+        {
+            return new None();
+        }
+
+        _policies[policy.Reference] = policy;
+
+        return policy;
     }
 }
