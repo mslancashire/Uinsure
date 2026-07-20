@@ -12,11 +12,16 @@ namespace Uinsure.Policy.API.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class PolicyController : ControllerBase
 {
+    private readonly TimeProvider _timeProvider;
     private readonly IPolicyRepository _repository;
     private readonly IValidator<HouseHoldPolicy> _renewalValidator;
 
-    public PolicyController(IPolicyRepository repository, IValidator<HouseHoldPolicy> renewalValidator)
+    public PolicyController(
+        TimeProvider timeProvider,
+        IPolicyRepository repository,
+        IValidator<HouseHoldPolicy> renewalValidator)
     {
+        _timeProvider = timeProvider;
         _repository = repository;
         _renewalValidator = renewalValidator;
     }
@@ -71,10 +76,10 @@ public class PolicyController : ControllerBase
     }
 
     /// <summary>
-    /// Gets the details of a household insurance policy using an id.
+    /// Attempts to renews an existing policy.
     /// </summary>
-    /// <returns></returns>
-    /// <response code="201">Created a policy sale.</response>
+    /// <returns>Renewed Policy</returns>
+    /// <response code="200">Renewed policy.</response>
     /// <response code="400">If provided input is invalid.</response>
     /// <response code="403">If not authorised, ensure all headers are provided.</response>
     /// <response code="500">Internal server error.</response>
@@ -106,6 +111,66 @@ public class PolicyController : ControllerBase
             Ok,
             none => NotFound(none)
             );
+    }
+
+    /// <summary>
+    /// Attempts to cancel an existing policy.
+    /// </summary>
+    /// <returns>Cancelled Policy</returns>
+    /// <response code="200">Cancelled policy.</response>
+    /// <response code="400">If provided input is invalid.</response>
+    /// <response code="403">If not authorised, ensure all headers are provided.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPut]
+    [Route("{policyReference:guid}/cancel")]
+    [Produces(typeof(HouseHoldPolicy))]
+    [ProducesResponseType(typeof(HouseHoldPolicy), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(500)]
+    public IActionResult CancelPolicy([FromRoute] Guid policyReference)
+    {
+        var result = _repository.Get(policyReference);
+        if (result.TryPickT0(out var policy, out _) == false)
+        {
+            return NotFound($"Policy with reference {policyReference} not found.");
+        }
+
+        policy.Cancel(DateOnly.FromDateTime(_timeProvider.GetUtcNow().Date));
+        var updateResult = _repository.Update(policy);
+
+        return updateResult.Match<IActionResult>(
+            Ok,
+            none => NotFound(none)
+            );
+    }
+
+    /// <summary>
+    /// Calculates the current refund value of a policy.
+    /// </summary>
+    /// <returns>Refund</returns>
+    /// <response code="200">Refund.</response>
+    /// <response code="400">If provided input is invalid.</response>
+    /// <response code="403">If not authorised, ensure all headers are provided.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpGet]
+    [Route("{policyReference:guid}/refund")]
+    [Produces(typeof(Refund))]
+    [ProducesResponseType(typeof(Refund), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(500)]
+    public IActionResult CalculateRefund([FromRoute] Guid policyReference)
+    {
+        var result = _repository.Get(policyReference);
+        if (result.TryPickT0(out var policy, out _) == false)
+        {
+            return NotFound($"Policy with reference {policyReference} not found.");
+        }
+
+        var refund = policy.CalculateRefund(DateOnly.FromDateTime(_timeProvider.GetUtcNow().Date));
+        
+        return Ok(refund);
     }
 
     public static ProblemDetails ProblemDetails(ValidationResult validationResult, HttpContext context)

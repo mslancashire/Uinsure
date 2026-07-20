@@ -9,33 +9,41 @@ namespace Tests.Uinsure.Integration;
 
 public class PolicySaleTests : BaseIntegrationTestFixture
 {
+    private readonly CancellationToken _cancellationToken;
     private readonly FakePolicySaleRequests _faker;
 
     public PolicySaleTests(CustomWebApplicationFactory application) : base(application)
     {
+        _cancellationToken = new CancellationTokenSource().Token;
         _faker = new FakePolicySaleRequests(Settings.TimeProvider);
+    }
+
+    private string SaleEndpoint()
+        => $"/api/v1/policy";
+
+    private async Task<HttpResponseMessage> PerformSale(PolicySaleRequest saleRequest)
+    {
+        return await _client.PostAsync(SaleEndpoint(), saleRequest.ToJsonContent(), _cancellationToken);
     }
 
     [Fact]
     public async Task PolicySale_should_return_201_when_valid_and_200_for_the_details()
     {
         // arrange
-        var cancellationToken = new CancellationTokenSource().Token;
-        var endpoint = "api/v1/policy";
         var policySaleRequest = _faker.Valid();
         
         // act
-        var createdResponse = await _client.PostAsync(endpoint, policySaleRequest.ToJsonContent(), cancellationToken);
+        var createdResponse = await PerformSale(policySaleRequest);
 
         // assert
         createdResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         createdResponse.Headers.Location.Should().NotBeNull();
         
         var policyId = createdResponse.Headers.Location?.Segments.LastOrDefault();
-        policyId.Should().Satisfy<string>(x => Guid.TryParse(x, out _));
+        Guid.TryParse(policyId, out _).Should().BeTrue();
 
         // act
-        var detailsResponse = await _client.GetAsync(createdResponse.Headers.Location, cancellationToken);
+        var detailsResponse = await _client.GetAsync(createdResponse.Headers.Location, _cancellationToken);
         detailsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var createdPolicy = await detailsResponse.GetAs<HouseHoldPolicy>();
@@ -51,7 +59,7 @@ public class PolicySaleTests : BaseIntegrationTestFixture
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
-        var expectedPolicy = Fakes.FakeHouseholdPolicies.ExistingWithoutPayments;
+        var expectedPolicy = FakeHouseholdPolicies.ExistingWithoutPayments;
         var endpoint = $"api/v1/policy/{expectedPolicy.Reference}";
 
         // act
@@ -71,12 +79,10 @@ public class PolicySaleTests : BaseIntegrationTestFixture
     public async Task PolicySale_should_return_400_when_start_date_is_not_provided()
     {
         // arrange
-        var cancellationToken = new CancellationTokenSource().Token;
-        var endpoint = $"api/v1/policy";
         var salesRequest = _faker.MissingStartDate();
 
         // act
-        var response = await _client.PostAsync(endpoint, salesRequest.ToJsonContent() ,cancellationToken);
+        var response = await PerformSale(salesRequest);
 
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -89,12 +95,10 @@ public class PolicySaleTests : BaseIntegrationTestFixture
     public async Task PolicySale_should_return_400_when_no_policy_holders_are_provided()
     {
         // arrange
-        var cancellationToken = new CancellationTokenSource().Token;
-        var endpoint = $"api/v1/policy";
         var salesRequest = _faker.MissingStartDate();
 
         // act
-        var response = await _client.PostAsync(endpoint, salesRequest.ToJsonContent(), cancellationToken);
+        var response = await PerformSale(salesRequest);
 
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

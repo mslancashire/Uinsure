@@ -17,9 +17,9 @@ The `Tests.Uinsure.Integration` project has HTTP examples and tests.
 
 - [x] (Must) Sell a Policy.
 - [x] (Must) Retrieve a Policy.
-- [ ] (Should) Cancel the Policy.
+- [x] (Should) Cancel the Policy.
 - [x] (Should) Renew a Policy.
-- [ ] (Could) Calculate the cost to cancel a policy before the policy has actually been cancelled.
+- [x] (Could) Calculate the cost to cancel a policy before the policy has actually been cancelled.
 - [ ] (Could) Not issue a refund if the policy has a claim made against it.
 - [ ] (Could) Prevent an auto renewal policy being paid for by cheque.
 
@@ -45,14 +45,15 @@ The `Tests.Uinsure.Integration` project has HTTP examples and tests.
 1. [x] Build out the Integration test project.
 1. [x] POST for selling a policy.
 1. [x] GET for retrieving a policy.
-1. [ ] PUT for cancelling a policy, using PUT over DELETE, POST, PATCH as the policy will remain but will be changed.
-1. [ ] PUT for renewing a policy, question here, would we create a new linked policy or just change the dates.
-1. [ ] GET for calculating the cost to cancel a policy before the policy has actually been cancelled.
+1. [x] PUT for cancelling a policy, using PUT over DELETE, POST, PATCH as the policy will remain but will be changed.
+1. [x] PUT for renewing a policy, question here, would we create a new linked policy or just change the dates.
+1. [x] GET for calculating the cost to cancel a policy before the policy has actually been cancelled.
 
 ## Sub Tasks
 
 1. [x] Add in fluent validation.
-1. [x] Add in an object store.
+1. [x] Add in a static object store.
+1. [ ] Add in `pgsql` support instead of static store.
 1. [ ] Add in Docker support.
 
 ## Questions
@@ -82,3 +83,5 @@ Some of the below packages can be replaced with custom code to avoid package pro
 - Use Query, Commands / Service instead of direct controller logic.
 - The renewal period logic could be configured instead of hard-coded.
 - Move from class based to records domain objects.
+- Review member availability, either need DTOs or way or outputting private via JSON.
+- Use Sub Type JSON for serialisation and de-serialisation of Refund type.

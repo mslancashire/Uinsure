@@ -1,6 +1,6 @@
 ﻿namespace Uinsure.Core.Models;
 
-public class Payment
+public record Payment
 {
     public static Payment Empty()
         => new() { Reference = Guid.Empty, Type = PaymentType.None, Amount = 0 };

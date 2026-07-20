@@ -3,6 +3,7 @@
 public class HouseHoldPolicy
 {
     private readonly List<Payment> _payments = [];
+    private readonly List<Refund> _refunds = [];
     
     public static HouseHoldPolicy CreateNewSale(PolicySaleRequest saleRequest)
     {
@@ -55,6 +56,11 @@ public class HouseHoldPolicy
     public IEnumerable<Payment> Payments => _payments;
 
     /// <summary>
+    /// Refunds made on the policy.
+    /// </summary>
+    public IEnumerable<Refund> Refunds => _refunds;
+
+    /// <summary>
     /// Adds a payment to the policy.
     /// </summary>
     /// <param name="paymentType"></param>
@@ -77,9 +83,19 @@ public class HouseHoldPolicy
     /// </summary>
     public bool AutoRenew => Payments.Any();
 
+    /// <summary>
+    /// States if the policy has expired.
+    /// </summary>
+    /// <param name="now"></param>
+    /// <returns></returns>
     public bool Expired(DateOnly now)
         => EndDate < now;
 
+    /// <summary>
+    /// States if the policy is withing the 30 day renewal period.
+    /// </summary>
+    /// <param name="now"></param>
+    /// <returns></returns>
     public bool WithinRenewalPeriod(DateOnly now)
         => (EndDate.DayNumber - now.DayNumber) <= 30;
 
@@ -97,5 +113,96 @@ public class HouseHoldPolicy
         }
         
         return this;
+    }
+
+    /// <summary>
+    /// States if the policy has been cancelled or not.
+    /// </summary>
+    public bool HasBeenCancelled { get; set; } = false;
+
+    /// <summary>
+    /// Cancels the policy applying the correct refund.
+    /// </summary>
+    /// <param name="now"></param>
+    public void Cancel(DateOnly now)
+    {
+        if (HasBeenCancelled)
+        {
+            return;
+        }
+        
+        var refund = CalculateRefund(now);
+
+        if (refund is FullRefund || refund is ProRataRefund)
+        {
+            HasBeenCancelled = true;
+            _refunds.Add(refund);
+        }
+    }
+
+    /// <summary>
+    /// States if the policy has started or not.
+    /// </summary>
+    /// <param name="now"></param>
+    /// <returns></returns>
+    internal bool Started(DateOnly now)
+        => StartDate <= now;
+
+    /// <summary>
+    /// States if the policy has started and if its still withing the cooling off period.
+    /// </summary>
+    /// <param name="now"></param>
+    /// <returns></returns>
+    internal bool WithinCoolingOffPeriod(DateOnly now)
+        => Started(now) && (now.DayNumber - StartDate.DayNumber) <= 14;
+
+    /// <summary>
+    /// States how many of the days the policy has been used for.
+    /// </summary>
+    /// <param name="now"></param>
+    /// <returns></returns>
+    internal int DaysUsed(DateOnly now)
+    {
+        if (Started(now) == false)
+        {
+            return 0;
+        }
+        
+        if (Expired(now))
+        {
+            return EndDate.DayNumber - StartDate.DayNumber;
+        }
+
+        return now.DayNumber - StartDate.DayNumber;
+    }
+
+    /// <summary>
+    /// Calculates a refund if the policy was to be cancelled.
+    /// </summary>
+    /// <param name="now"></param>
+    /// <returns></returns>
+    public Refund CalculateRefund(DateOnly now)
+    {
+        if (Payments.Any() == false)
+        {
+            return NoPayment.Create();
+        }
+
+        if (Expired(now))
+        {
+            return NoRefund.Create();
+        }
+
+        if (Started(now) == false)
+        {
+            return FullRefund.Create(Payments.First());
+        }
+
+        if (WithinCoolingOffPeriod(now))
+        {
+            return FullRefund.Create(Payments.First());
+        }
+
+        return ProRataRefund.Create(Payments.First(), DaysUsed(now));
     }
 }

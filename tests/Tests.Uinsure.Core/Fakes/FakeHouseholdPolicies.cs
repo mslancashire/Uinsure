@@ -5,12 +5,28 @@ namespace Tests.Uinsure.Core.Fakes;
 public class FakeHouseholdPolicies
 {
     public static IEnumerable<HouseHoldPolicy> ExistingPolicies =>
-        [ExistingWithoutPayments, ExistingWithPayments, Expired, OutsideRenewalPeriod];
+        [ExistingWithoutPayments, ExistingWithPayments, Expired, OutsideRenewalPeriod, ToBeCancelled, ToBeRefunded];
 
     public static readonly HouseHoldPolicy ExistingWithoutPayments
         = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = Settings.DateForRenewal });
 
     public static readonly HouseHoldPolicy ExistingWithPayments
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest
+        {
+            StartDate = Settings.DateForRenewal,
+            PaymentType = PaymentType.Card,
+            Price = 159.59M
+        });
+
+    public static readonly HouseHoldPolicy ToBeCancelled
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest
+        {
+            StartDate = Settings.DateForRenewal,
+            PaymentType = PaymentType.Card,
+            Price = 159.59M
+        });
+
+    public static readonly HouseHoldPolicy ToBeRefunded
         = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest
         {
             StartDate = Settings.DateForRenewal,
