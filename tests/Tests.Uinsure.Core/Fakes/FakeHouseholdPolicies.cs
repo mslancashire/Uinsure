@@ -22,7 +22,7 @@ public class FakeHouseholdPolicies
         = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = Settings.ReferenceDate.AddMonths(-13) });
 
     public static readonly HouseHoldPolicy OutsideRenewalPeriod
-        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = Settings.ReferenceDate.AddMonths(-11) });
+        = HouseHoldPolicy.CreateNewSale(new PolicySaleRequest { StartDate = DateOnly.Parse("2025-06-01") });
 
     public static readonly HouseHoldPolicy MissingPolicy = new() { Reference = Guid.NewGuid() };
 }

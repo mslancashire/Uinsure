@@ -81,7 +81,7 @@ public class HouseHoldPolicy
         => EndDate < now;
 
     public bool WithinRenewalPeriod(DateOnly now)
-        => EndDate.AddDays(-30) > now;
+        => (EndDate.DayNumber - now.DayNumber) <= 30;
 
     /// <summary>
     /// Renews the policy, adding a payment if Auto Renew is enabled.

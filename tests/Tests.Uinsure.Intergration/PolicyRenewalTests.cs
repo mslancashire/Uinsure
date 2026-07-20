@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Tests.Uinsure.Core;
 using Tests.Uinsure.Core.Fakes;
@@ -98,17 +97,34 @@ public class PolicyRenewalTests : BaseIntegrationTestFixture
         var response = await PerformRenewal(expectedPolicy);
 
         // assert
+        await CheckForProblem(response, expectedPolicy, "Policy can not be renewed after the policy end date.");
+    }
+
+    [Fact]
+    public async Task PolicyRenewal_should_return_400_for_renew_when_policy_is_not_within_renewal_window()
+    {
+        // arrange
+        var expectedPolicy = FakeHouseholdPolicies.OutsideRenewalPeriod;
+
+        // act
+        var response = await PerformRenewal(expectedPolicy);
+
+        // assert
+        await CheckForProblem(response, expectedPolicy, "Policy can only be renewed 30 days before end date.");
+    }
+
+    private async Task CheckForProblem(HttpResponseMessage response, HouseHoldPolicy expectedPolicy, string errorMessage)
+    {
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         var problemDetails = await response.GetAs<HttpValidationProblemDetails>();
         problemDetails.Should().NotBeNull();
-        problemDetails.Status.Should().Be((int) HttpStatusCode.BadRequest);
+        problemDetails.Status.Should().Be((int)HttpStatusCode.BadRequest);
         problemDetails.Title.Should().Be("Validation failed");
         problemDetails.Detail.Should().Be("One or more validation errors occurred.");
         problemDetails.Instance.Should().Be(RenewalEndpoint(expectedPolicy));
         problemDetails.Errors.Should().HaveCount(1);
-        problemDetails.Errors["EndDate"].Should().HaveCount(2);
-        problemDetails.Errors["EndDate"].First().Should().Be("Policy can not be renewed after the policy end date.");
-        problemDetails.Errors["EndDate"].Last().Should().Be("Policy can only be renewed 30 days before end date.");
+        problemDetails.Errors["EndDate"].Should().HaveCount(1);
+        problemDetails.Errors["EndDate"].First().Should().Be(errorMessage);
     }
 }
