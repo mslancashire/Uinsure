@@ -1,17 +1,24 @@
 # Uinsure
 
-Tech Test for Uinsure
+Tech Test for Uinsure.
 
 ## How To Run
 
-TBC
+Requires .NET 10.
+
+Should run straight out of the box, just for the Tech Test a static object store is used so no need for Docker or SQL.
+So build and run the API.
+
+A `Uinsure.Policy.API.http` has been included to show HTTP request examples.
+Swagger UI has been enabled which can also be used (`/swagger`).
+The `Tests.Uinsure.Integration` project has HTTP examples and tests.
 
 ## Functional Requirements
 
 - [x] (Must) Sell a Policy.
 - [x] (Must) Retrieve a Policy.
 - [ ] (Should) Cancel the Policy.
-- [ ] (Should) Renew a Policy.
+- [x] (Should) Renew a Policy.
 - [ ] (Could) Calculate the cost to cancel a policy before the policy has actually been cancelled.
 - [ ] (Could) Not issue a refund if the policy has a claim made against it.
 - [ ] (Could) Prevent an auto renewal policy being paid for by cheque.
@@ -73,3 +80,5 @@ Some of the below packages can be replaced with custom code to avoid package pro
 - How to handle DateOnly with TimeZone.
 - How to handle Price and Amount for currencies.
 - Use Query, Commands / Service instead of direct controller logic.
+- The renewal period logic could be configured instead of hard-coded.
+- Move from class based to records domain objects.
